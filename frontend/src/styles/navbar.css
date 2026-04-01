@@ -1,0 +1,286 @@
+/* ================================================================
+   STORMY MORNING — navbar.css
+   Top Navbar: #384959 background · White text
+   ================================================================ */
+
+/* ── Top Navbar ──────────────────────────────────────────── */
+.top-navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--navbar-height);
+  background: var(--navbar-bg);     /* #384959 deep blue-gray */
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 8px;
+  z-index: 200;
+  box-shadow: 0 2px 12px rgba(56,73,89,0.2);
+}
+
+/* ── Logo ────────────────────────────────────────────────── */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+  margin-right: 24px;
+}
+
+.navbar-logo-icon {
+  width: 34px; height: 34px;
+  border-radius: var(--r-md);
+  background: var(--primary);       /* #88BDF2 soft blue */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(136,189,242,0.35);
+}
+
+.navbar-brand {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+
+/* ── Nav Links ───────────────────────────────────────────── */
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: var(--r-md);
+  text-decoration: none;
+  color: rgba(255,255,255,0.65);
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+
+.nav-link.active {
+  color: #fff;
+  background: rgba(136,189,242,0.18);
+  font-weight: 600;
+}
+
+/* Active bottom indicator */
+.nav-link.active::after {
+  display: none; /* keeping it flat/clean */
+}
+
+.nav-link-icon { font-size: 14px; line-height: 1; }
+
+/* ── Right Section ───────────────────────────────────────── */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Icon buttons */
+.navbar-icon-btn {
+  width: 36px; height: 36px;
+  border-radius: var(--r-md);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 15px;
+  color: rgba(255,255,255,0.7);
+  transition: var(--transition);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.navbar-icon-btn:hover {
+  background: rgba(136,189,242,0.2);
+  border-color: rgba(136,189,242,0.3);
+  color: #fff;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 7px; height: 7px;
+  background: var(--danger);
+  border-radius: 50%;
+  border: 1.5px solid var(--navbar-bg);
+}
+
+/* User pill */
+.navbar-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border-radius: var(--r-full);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.navbar-user-pill:hover {
+  background: rgba(136,189,242,0.15);
+  border-color: rgba(136,189,242,0.3);
+}
+
+.navbar-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbar-role-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Logout button */
+.navbar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--r-md);
+  background: rgba(217,95,95,0.12);
+  border: 1px solid rgba(217,95,95,0.2);
+  color: #F0A0A0;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.navbar-logout-btn:hover {
+  background: rgba(217,95,95,0.22);
+  color: #FFB8B8;
+  border-color: rgba(217,95,95,0.35);
+}
+
+/* Dark mode toggle */
+.navbar-icon-btn.theme-toggle {
+  font-size: 14px;
+}
+
+/* ── Mobile hamburger ────────────────────────────────────── */
+.mobile-menu-btn {
+  display: none;
+  width: 36px; height: 36px;
+  border-radius: var(--r-md);
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.1);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: var(--transition);
+}
+.mobile-menu-btn:hover { background: rgba(255,255,255,0.14); }
+
+/* ── Mobile dropdown ─────────────────────────────────────── */
+.mobile-nav {
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0; right: 0;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 12px 16px 16px;
+  z-index: 199;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  box-shadow: 0 8px 24px rgba(56,73,89,0.2);
+}
+
+.mobile-nav.open { display: flex; }
+
+.mobile-nav .nav-link {
+  padding: 11px 14px;
+  border-radius: var(--r-md);
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+}
+
+.mobile-nav .nav-link:hover,
+.mobile-nav .nav-link.active {
+  background: rgba(136,189,242,0.15);
+  color: #fff;
+}
+
+.mobile-nav-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 8px 0;
+}
+
+.mobile-nav-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: var(--r-md);
+  color: #F0A0A0;
+  background: rgba(217,95,95,0.08);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--font-body);
+  margin-top: 4px;
+  transition: var(--transition);
+}
+
+.mobile-nav-logout:hover {
+  background: rgba(217,95,95,0.16);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .top-navbar { padding: 0 16px; }
+  .navbar-nav { display: none; }
+  .mobile-menu-btn { display: flex; }
+  .navbar-user-name { display: none; }
+}
+
+@media (max-width: 600px) {
+  .navbar-role-badge { display: none; }
+  .navbar-logout-btn span:last-child { display: none; }
+}

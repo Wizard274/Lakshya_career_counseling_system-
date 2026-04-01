@@ -1,0 +1,64 @@
+/* ================================================================
+   STORMY MORNING — darkmode.css
+   Dark theme applied when <html data-theme="dark">
+   ================================================================ */
+
+[data-theme="dark"] {
+  --bg-page:        #1E2A34;
+  --bg-surface:     #243340;
+  --bg-input:       #1A2530;
+  --text-heading:   #E8F0F8;
+  --text-body:      #8AAEC8;
+  --text-muted:     #5A7A92;
+  --text-dark:      #D0E4F0;
+  --border:         #2D3F50;
+  --border-dark:    #3A5060;
+  --border-focus:   #88BDF2;
+  --primary-light:  #1E3048;
+  --primary-mid:    #2A4060;
+  --secondary-light:#2D4255;
+  --bg-dark:        #131E27;
+  --accent-dark2:   #0F1820;
+}
+
+[data-theme="dark"] .card { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] .stat-card { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] .table-wrapper { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] thead { background: var(--primary-light); }
+[data-theme="dark"] th { color: #88BDF2; border-bottom-color: var(--border); }
+[data-theme="dark"] td { border-bottom-color: var(--border); }
+[data-theme="dark"] tbody tr:hover { background: var(--primary-light); }
+[data-theme="dark"] .form-input { background: var(--bg-input); border-color: var(--border); color: var(--text-dark); }
+[data-theme="dark"] .form-input:focus { background: var(--bg-surface); border-color: var(--primary); }
+[data-theme="dark"] .btn-ghost { background: var(--bg-surface); border-color: var(--border); color: var(--text-heading); }
+[data-theme="dark"] .btn-ghost:hover:not(:disabled) { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+[data-theme="dark"] .search-input { background: var(--bg-surface); border-color: var(--border); color: var(--text-dark); }
+[data-theme="dark"] .filter-select { background: var(--bg-surface); border-color: var(--border); color: var(--text-heading); }
+[data-theme="dark"] .step-card { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] .booking-summary { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] .schedule-day { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] .schedule-day-head { background: var(--primary-light); }
+[data-theme="dark"] .schedule-day:not(.active) .schedule-day-head { background: var(--bg-dark); }
+[data-theme="dark"] .apt-card { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] .counselor-card { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] .counselor-footer { border-top-color: var(--border); }
+[data-theme="dark"] .chart-card { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] .pagination button { background: var(--bg-surface); border-color: var(--border); color: var(--text-body); }
+[data-theme="dark"] .slot-btn { background: var(--bg-surface); border-color: var(--border); color: var(--text-body); }
+[data-theme="dark"] .slot-btn:hover:not(.booked):not(.selected) { background: var(--primary-light); }
+[data-theme="dark"] .slot-btn.booked { background: var(--bg-input); }
+[data-theme="dark"] .auth-right { background: #1A2838; }
+[data-theme="dark"] .role-card { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] .role-card:hover { background: var(--primary-light); }
+[data-theme="dark"] .role-card.selected { background: var(--primary-light); }
+[data-theme="dark"] .otp-digit { background: var(--bg-surface); border-color: var(--border); color: var(--text-dark); }
+[data-theme="dark"] .otp-digit.filled { background: var(--primary-light); }
+[data-theme="dark"] .action-card { background: var(--bg-surface); border-color: var(--border); }
+[data-theme="dark"] ::-webkit-scrollbar-track { background: var(--bg-page); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--border); }
+
+/* Smooth transitions */
+*, *::before, *::after {
+  transition: background-color 0.22s ease, border-color 0.22s ease, color 0.18s ease;
+}
+.spinner, [class*="anim-"] { transition: none !important; }

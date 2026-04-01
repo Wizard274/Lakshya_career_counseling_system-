@@ -1,0 +1,26 @@
+{
+  "name": "career-counseling-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@stripe/react-stripe-js": "^6.0.0",
+    "@stripe/stripe-js": "^9.0.0",
+    "axios": "^1.4.0",
+    "date-fns": "^2.30.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "react-router-dom": "^6.14.1",
+    "recharts": "^2.7.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.3",
+    "vite": "^4.4.5"
+  }
+}

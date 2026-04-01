@@ -1,0 +1,43 @@
+# ============================================
+# .gitignore — Career Counseling System
+# ============================================
+
+# Dependencies — never commit these
+node_modules/
+*/node_modules/
+
+# Environment variables — NEVER commit secrets
+.env
+.env.local
+.env.production
+backend/.env
+frontend/.env
+
+# Build output
+dist/
+build/
+*.tgz
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Cache
+.npm
+.eslintcache
+.parcel-cache
+
+# Temp files
+*.tmp
+*.temp
