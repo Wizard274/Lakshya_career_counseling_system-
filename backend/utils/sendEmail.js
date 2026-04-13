@@ -15,10 +15,17 @@ const sendEmail = async ({ to, subject, html }) => {
       throw new Error("BREVO_API_KEY is missing in environment variables.");
     }
 
+    // Extract raw email if Render setting has "Name <email@gmail.com>"
+    let rawEmailFrom = process.env.EMAIL_FROM || "noreply@lakshay.com";
+    if (rawEmailFrom.includes('<') && rawEmailFrom.includes('>')) {
+      const match = rawEmailFrom.match(/<([^>]+)>/);
+      if (match) rawEmailFrom = match[1].trim();
+    }
+
     const payload = {
       sender: {
         name: process.env.EMAIL_FROM_NAME || "Lakshya Career",
-        email: process.env.EMAIL_FROM || "noreply@lakshay.com"
+        email: rawEmailFrom
       },
       to: [{ email: to }],
       subject: subject,
