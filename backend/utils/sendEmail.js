@@ -4,32 +4,42 @@
 // Added: Better email templates
 // ============================================
 
-const nodemailer = require("nodemailer");
-
-// Create reusable transporter
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.EMAIL_PORT) || 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-};
-
-// ── Common email wrapper ──────────────────────────────────
+// ── Common email wrapper (Brevo API) ──────────────────────
 const sendEmail = async ({ to, subject, html }) => {
-  const transporter = createTransporter();
   try {
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || `"Lakshya Career" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html,
+    const brevoApiKey = process.env.BREVO_API_KEY;
+    if (!brevoApiKey) {
+      throw new Error("BREVO_API_KEY is missing in environment variables.");
+    }
+
+    const payload = {
+      sender: {
+        name: process.env.EMAIL_FROM_NAME || "Lakshya Career",
+        email: process.env.EMAIL_FROM || "noreply@lakshay.com"
+      },
+      to: [{ email: to }],
+      subject: subject,
+      htmlContent: html
+    };
+
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": brevoApiKey,
+        "content-type": "application/json"
+      },
+      body: JSON.stringify(payload)
     });
-    console.log(`✉️  Email sent to ${to}: ${info.messageId}`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("❌ Brevo API Error:", errorData);
+      throw new Error("Failed to send email via Brevo.");
+    }
+
+    const data = await response.json();
+    console.log(`✉️  Email sent to ${to} via Brevo: ${data.messageId}`);
     return { success: true };
   } catch (error) {
     console.error("❌ Email failed:", error.message);
