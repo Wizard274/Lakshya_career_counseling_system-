@@ -7,7 +7,7 @@
 // ── Common email wrapper (Brevo HTTP API) ─────────────────
 const sendEmail = async ({ to, subject, html }) => {
   try {
-    const apiKey = process.env.BREVO_API_KEY || process.env.EMAIL_PASS;
+    const apiKey = (process.env.BREVO_API_KEY || process.env.EMAIL_PASS || "").trim();
     const senderEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER;
 
     if (!apiKey) {
