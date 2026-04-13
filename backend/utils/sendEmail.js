@@ -4,11 +4,14 @@
 // Added: Better email templates
 // ============================================
 
+const axios = require("axios");
+
 // ── Common email wrapper (Brevo API) ──────────────────────
 const sendEmail = async ({ to, subject, html }) => {
   try {
     const brevoApiKey = process.env.BREVO_API_KEY;
     if (!brevoApiKey) {
+      console.error("❌ BREVO_API_KEY is missing in environment variables.");
       throw new Error("BREVO_API_KEY is missing in environment variables.");
     }
 
@@ -22,28 +25,30 @@ const sendEmail = async ({ to, subject, html }) => {
       htmlContent: html
     };
 
-    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-      method: "POST",
+    const response = await axios.post("https://api.brevo.com/v3/smtp/email", payload, {
       headers: {
         "accept": "application/json",
         "api-key": brevoApiKey,
         "content-type": "application/json"
-      },
-      body: JSON.stringify(payload)
+      }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("❌ Brevo API Error:", errorData);
-      throw new Error("Failed to send email via Brevo.");
-    }
-
-    const data = await response.json();
-    console.log(`✉️  Email sent to ${to} via Brevo: ${data.messageId}`);
+    console.log(`✉️  Email sent to ${to} via Brevo: ${response.data.messageId}`);
     return { success: true };
   } catch (error) {
-    console.error("❌ Email failed:", error.message);
-    throw new Error("Failed to send email. Please try again.");
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.error("❌ Brevo API Error Data:", error.response.data);
+      console.error("❌ Brevo API Error Status:", error.response.status);
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error("❌ No response from Brevo API:", error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.error("❌ Email failed:", error.message);
+    }
+    throw new Error("Failed to send email via Brevo.");
   }
 };
 
