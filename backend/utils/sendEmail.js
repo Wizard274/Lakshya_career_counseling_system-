@@ -6,80 +6,39 @@
 
 const axios = require("axios");
 
-// ── Brevo API Logic ─────────────────────────────────────────
-const sendWithBrevo = async (to, subject, html, senderName, senderEmail) => {
-  const brevoApiKey = process.env.BREVO_API_KEY;
-  if (!brevoApiKey) throw new Error("BREVO_API_KEY is missing");
-
-  const payload = {
-    sender: { name: senderName, email: senderEmail },
-    to: [{ email: to }],
-    subject: subject,
-    htmlContent: html
-  };
-
-  const response = await axios.post("https://api.brevo.com/v3/smtp/email", payload, {
-    headers: {
-      "accept": "application/json",
-      "api-key": brevoApiKey,
-      "content-type": "application/json"
-    }
-  });
-
-  console.log(`✅ [BREVO] Email sent to ${to}: ${response.data.messageId}`);
-  return response.data;
-};
-
-// ── Resend API Logic ────────────────────────────────────────
-const sendWithResend = async (to, subject, html, senderName, senderEmail) => {
-  const resendApiKey = process.env.RESEND_API_KEY;
-  if (!resendApiKey) throw new Error("RESEND_API_KEY is missing");
-
-  const payload = {
-    from: `${senderName} <${senderEmail}>`,
-    to: [to],
-    subject: subject,
-    html: html
-  };
-
-  const response = await axios.post("https://api.resend.com/emails", payload, {
-    headers: {
-      "Authorization": `Bearer ${resendApiKey}`,
-      "Content-Type": "application/json"
-    }
-  });
-
-  console.log(`✅ [RESEND] Email sent to ${to}: ${response.data.id}`);
-  return response.data;
-};
-
-// ── Main Fallback Wrapper ───────────────────────────────────
+// ── Common email wrapper (Resend API) ─────────────────────
 const sendEmail = async ({ to, subject, html }) => {
-  // Gracefully handle standard or 'Name <email>' formats from Env variables
-  let senderEmail = process.env.EMAIL_FROM || "noreply@lakshay.com";
-  if (senderEmail.includes('<') && senderEmail.includes('>')) {
-    const match = senderEmail.match(/<([^>]+)>/);
-    if (match) senderEmail = match[1].trim();
-  }
-  const senderName = process.env.EMAIL_FROM_NAME || "Lakshya Career";
-
   try {
-    // Attempt 1: Brevo
-    await sendWithBrevo(to, subject, html, senderName, senderEmail);
-    return { success: true };
-  } catch (brevoError) {
-    const brevoReason = brevoError.response ? JSON.stringify(brevoError.response.data) : brevoError.message;
-    console.error(`⚠️ [BREVO FAILED]: ${brevoReason}. Switching to Resend Fallback...`);
-
-    try {
-      // Attempt 2: Resend
-      await sendWithResend(to, subject, html, senderName, senderEmail);
-      return { success: true };
-    } catch (resendError) {
-      const resendReason = resendError.response ? JSON.stringify(resendError.response.data) : resendError.message;
-      console.error(`❌ [RESEND FAILED]: ${resendReason}. Both providers failed!`);
-      throw new Error("System failed to send email. Providers exhausted.");
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (!resendApiKey) {
+      throw new Error("RESEND_API_KEY is missing in environment variables.");
     }
+
+    // In testing mode without a verified domain, Resend strictly requires
+    // emails to be sent FROM onboarding@resend.dev
+    const payload = {
+      from: "Lakshya Career <onboarding@resend.dev>",
+      to: [to],
+      subject: subject,
+      html: html
+    };
+
+    const response = await axios.post("https://api.resend.com/emails", payload, {
+      headers: {
+        "Authorization": `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    console.log(`✅ [RESEND] Email sent to ${to}: ${response.data.id}`);
+    return { success: true };
+  } catch (error) {
+    if (error.response) {
+      console.error("❌ Resend API Error:", error.response.data);
+    } else {
+      console.error("❌ Email sending failed:", error.message);
+    }
+    throw new Error("Failed to send email. Please check configuration.");
   }
 };
 
