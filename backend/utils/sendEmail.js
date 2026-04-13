@@ -9,13 +9,24 @@ const nodemailer = require("nodemailer");
 // Force IPv4 resolution to prevent ENETUNREACH IPv6 errors on Render
 require("dns").setDefaultResultOrder("ipv4first");
 
+const dns = require("dns");
+
 // Create reusable transporter
-const createTransporter = () => {
+const createTransporter = async () => {
   const port = process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 465;
+  const hostName = process.env.EMAIL_HOST || "smtp.gmail.com";
+  
+  // Force strict IPv4 DNS resolution to physically bypass Render's IPv6 outbound block
+  const { address } = await dns.promises.lookup(hostName, { family: 4 });
+
   return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || "smtp.gmail.com",
+    host: address, // Use the resolved IPv4 IP address (e.g. 142.251.163.108)
     port: port,
     secure: port === 465, // true for 465, false for other ports
+    tls: {
+      // Required so the SSL certificate still validates against "smtp.gmail.com"
+      servername: hostName, 
+    },
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
@@ -25,7 +36,7 @@ const createTransporter = () => {
 
 // ── Common email wrapper ──────────────────────────────────
 const sendEmail = async ({ to, subject, html }) => {
-  const transporter = createTransporter();
+  const transporter = await createTransporter();
   try {
     const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM || `"Lakshya Career" <${process.env.EMAIL_USER}>`,
