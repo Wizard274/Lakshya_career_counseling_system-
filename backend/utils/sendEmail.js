@@ -4,41 +4,36 @@
 // Added: Better email templates
 // ============================================
 
-const axios = require("axios");
+const nodemailer = require("nodemailer");
 
-// ── Common email wrapper (Resend API) ─────────────────────
+// Create reusable transporter
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.EMAIL_PORT) || 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+};
+
+// ── Common email wrapper ──────────────────────────────────
 const sendEmail = async ({ to, subject, html }) => {
+  const transporter = createTransporter();
   try {
-    const resendApiKey = process.env.RESEND_API_KEY;
-    if (!resendApiKey) {
-      throw new Error("RESEND_API_KEY is missing in environment variables.");
-    }
-
-    // In testing mode without a verified domain, Resend strictly requires
-    // emails to be sent FROM onboarding@resend.dev
-    const payload = {
-      from: "Lakshya Career <onboarding@resend.dev>",
-      to: [to],
-      subject: subject,
-      html: html
-    };
-
-    const response = await axios.post("https://api.resend.com/emails", payload, {
-      headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json"
-      }
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_FROM || `"Lakshya Career" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
     });
-
-    console.log(`✅ [RESEND] Email sent to ${to}: ${response.data.id}`);
+    console.log(`✉️  Email sent to ${to}: ${info.messageId}`);
     return { success: true };
   } catch (error) {
-    if (error.response) {
-      console.error("❌ Resend API Error:", error.response.data);
-    } else {
-      console.error("❌ Email sending failed:", error.message);
-    }
-    throw new Error("Failed to send email. Please check configuration.");
+    console.error("❌ Email failed:", error.message);
+    throw new Error("Failed to send email. Please try again.");
   }
 };
 
