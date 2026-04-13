@@ -39,6 +39,9 @@ connectDB();
 
 const app = express();
 
+// Trust proxy for Render (required for rate-limiting behind a proxy)
+app.set("trust proxy", 1);
+
 // ── Stripe Webhook (Must be before express.json) ──────────
 const { stripeWebhook } = require("./controllers/paymentController");
 app.post("/api/payments/stripe-webhook", express.raw({ type: "application/json" }), stripeWebhook);
