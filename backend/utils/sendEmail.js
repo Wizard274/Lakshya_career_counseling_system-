@@ -4,47 +4,44 @@
 // Added: Better email templates
 // ============================================
 
-const nodemailer = require("nodemailer");
-
-// Force IPv4 resolution to prevent ENETUNREACH IPv6 errors on Render
-require("dns").setDefaultResultOrder("ipv4first");
-
-const dns = require("dns");
-
-// Create reusable transporter
-const createTransporter = async () => {
-  const port = process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 587;
-  const hostName = process.env.EMAIL_HOST || "smtp-relay.brevo.com";
-  
-  // Force strict IPv4 DNS resolution to physically bypass Render's IPv6 outbound block
-  const { address } = await dns.promises.lookup(hostName, { family: 4 });
-
-  return nodemailer.createTransport({
-    host: address, // Use the resolved IPv4 IP address
-    port: port,
-    secure: port === 465, // true for 465, false for 587 (STARTTLS)
-    tls: {
-      // Required so the SSL certificate still validates against the hostName
-      servername: hostName, 
-    },
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-};
-
-// ── Common email wrapper ──────────────────────────────────
+// ── Common email wrapper (Brevo HTTP API) ─────────────────
 const sendEmail = async ({ to, subject, html }) => {
-  const transporter = await createTransporter();
   try {
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || `"Lakshya Career" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html,
+    const apiKey = process.env.BREVO_API_KEY || process.env.EMAIL_PASS;
+    const senderEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+
+    if (!apiKey) {
+      throw new Error("BREVO_API_KEY is missing in environment variables.");
+    }
+
+    const payload = {
+      sender: {
+        name: "Lakshya Career Platform",
+        email: senderEmail
+      },
+      to: [{ email: to }],
+      subject: subject,
+      htmlContent: html
+    };
+
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": apiKey,
+        "content-type": "application/json"
+      },
+      body: JSON.stringify(payload)
     });
-    console.log(`✉️  Email sent to ${to}: ${info.messageId}`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("❌ Brevo API Error:", errorData);
+      throw new Error("Failed to send email via Brevo API");
+    }
+
+    const data = await response.json();
+    console.log(`✉️  Email successfully sent to ${to} via API: ${data.messageId}`);
     return { success: true };
   } catch (error) {
     console.error("❌ Email failed:", error.message);
