@@ -13,18 +13,18 @@ const dns = require("dns");
 
 // Create reusable transporter
 const createTransporter = async () => {
-  const port = process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 465;
-  const hostName = process.env.EMAIL_HOST || "smtp.gmail.com";
+  const port = process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 587;
+  const hostName = process.env.EMAIL_HOST || "smtp-relay.brevo.com";
   
   // Force strict IPv4 DNS resolution to physically bypass Render's IPv6 outbound block
   const { address } = await dns.promises.lookup(hostName, { family: 4 });
 
   return nodemailer.createTransport({
-    host: address, // Use the resolved IPv4 IP address (e.g. 142.251.163.108)
+    host: address, // Use the resolved IPv4 IP address
     port: port,
-    secure: port === 465, // true for 465, false for other ports
+    secure: port === 465, // true for 465, false for 587 (STARTTLS)
     tls: {
-      // Required so the SSL certificate still validates against "smtp.gmail.com"
+      // Required so the SSL certificate still validates against the hostName
       servername: hostName, 
     },
     auth: {
