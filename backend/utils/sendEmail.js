@@ -108,7 +108,7 @@ const sendOTPEmail = async (to, otp, purpose = "registration") => {
 
 // ── Booking Notification Email ────────────────────────────
 const sendBookingEmail = async (to, bookingDetails) => {
-  const { studentName, counselorName, date, timeSlot, topic, status } = bookingDetails;
+  const { studentName, counselorName, date, timeSlot, topic, status, recipientName } = bookingDetails;
 
   const statusColors = {
     pending:   "#f59e0b",
@@ -140,7 +140,7 @@ const sendBookingEmail = async (to, bookingDetails) => {
       <div class="card">
         <div class="header"><h1>✦ Session Update</h1></div>
         <div class="body">
-          <p style="color:#52525b;margin:0 0 20px;font-size:14px;">Hello <strong>${studentName}</strong>, here's your session update:</p>
+          <p style="color:#52525b;margin:0 0 20px;font-size:14px;">Hello <strong>${recipientName || studentName}</strong>, here's your session update:</p>
           <div class="detail"><span class="label">Counselor</span><span class="value">${counselorName}</span></div>
           <div class="detail"><span class="label">Date</span><span class="value">${date}</span></div>
           <div class="detail"><span class="label">Time</span><span class="value">${timeSlot}</span></div>
@@ -211,4 +211,48 @@ const sendPaymentSuccessEmail = async (to, data) => {
   });
 };
 
-module.exports = { sendEmail, sendOTPEmail, sendBookingEmail, sendPaymentSuccessEmail };
+// ── Payment Notification Email (for Counselor) ──────────────────────
+const sendPaymentNotificationToCounselor = async (to, data) => {
+  const { counselorName, studentName, amount } = data;
+  
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f5fb; margin: 0; padding: 20px; }
+        .card { max-width: 520px; margin: 0 auto; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+        .header { background: linear-gradient(135deg, #10b981, #059669); padding: 32px; text-align: center; }
+        .header h1 { color: #fff; margin: 0; font-size: 22px; letter-spacing: -0.5px; }
+        .body  { padding: 32px; }
+        .body p { color: #52525b; line-height: 1.7; font-size: 14px; }
+        .footer { background: #f4f5fb; padding: 20px; text-align: center; color: #a1a1aa; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="header">
+          <h1>✦ Payment Received</h1>
+        </div>
+        <div class="body">
+          <h2 style="color:#09090b;margin:0 0 12px;font-size:20px;">Hello ${counselorName},</h2>
+          <p>This is to inform you that <strong>${studentName}</strong> has successfully completed the payment of <strong>$${amount}</strong> for their session.</p>
+          <p>Please wait for the student to confirm the booking using their OTP on the platform.</p>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} Lakshya Career Platform</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to,
+    subject: "💰 Payment Received - Lakshya",
+    html,
+  });
+};
+
+module.exports = { sendEmail, sendOTPEmail, sendBookingEmail, sendPaymentSuccessEmail, sendPaymentNotificationToCounselor };

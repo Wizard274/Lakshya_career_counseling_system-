@@ -102,6 +102,17 @@ const createBooking = async (req, res, next) => {
         timeSlot,
         topic,
         status: "pending",
+        recipientName: student.name,
+      });
+
+      await sendBookingEmail(counselor.email, {
+        studentName: student.name,
+        counselorName: counselor.name,
+        date: dateStr,
+        timeSlot,
+        topic,
+        status: "pending",
+        recipientName: counselor.name,
       });
     } catch (emailErr) {
       console.error("Booking email failed:", emailErr.message);
@@ -277,6 +288,17 @@ const updateBooking = async (req, res, next) => {
         timeSlot: appointment.timeSlot,
         topic: appointment.topic,
         status,
+        recipientName: appointment.student.name,
+      });
+
+      await sendBookingEmail(appointment.counselor.email, {
+        studentName: appointment.student.name,
+        counselorName: appointment.counselor.name,
+        date: dateStr,
+        timeSlot: appointment.timeSlot,
+        topic: appointment.topic,
+        status,
+        recipientName: appointment.counselor.name,
       });
     } catch (emailErr) {
       console.error("Status email failed:", emailErr.message);
@@ -397,10 +419,12 @@ const verifyBookingOTP = async (req, res, next) => {
       await sendBookingEmail(appointment.student.email, {
         studentName: appointment.student.name, counselorName: appointment.counselor.name,
         date: dateStr, timeSlot: appointment.timeSlot, topic: appointment.topic, status: "confirmed",
+        recipientName: appointment.student.name,
       });
       await sendBookingEmail(appointment.counselor.email, {
         studentName: appointment.student.name, counselorName: appointment.counselor.name,
         date: dateStr, timeSlot: appointment.timeSlot, topic: appointment.topic, status: "confirmed",
+        recipientName: appointment.counselor.name,
       });
     } catch (e) {
       console.log("Error sending confirmed email");

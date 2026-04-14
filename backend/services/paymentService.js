@@ -7,7 +7,7 @@ const Appointment = require("../models/Appointment");
 const Payment = require("../models/Payment");
 const OTP = require("../models/OTP");
 const generateOTP = require("../utils/generateOTP");
-const { sendPaymentSuccessEmail } = require("../utils/sendEmail");
+const { sendPaymentSuccessEmail, sendPaymentNotificationToCounselor } = require("../utils/sendEmail");
 
 const createIntent = async (bookingId, userId) => {
   const appointment = await Appointment.findById(bookingId).populate("counselor");
@@ -51,7 +51,7 @@ const handleWebhook = async (rawBody, signature) => {
     const appointment = await Appointment.findByIdAndUpdate(bookingId, { 
       status: "payment_done", 
       paymentStatus: "paid" 
-    }, { new: true }).populate("student", "email name");
+    }, { new: true }).populate("student", "email name").populate("counselor", "email name");
 
     if (appointment && appointment.student) {
       // Generate OTP for confirmation
@@ -72,6 +72,14 @@ const handleWebhook = async (rawBody, signature) => {
         amount: paymentIntent.amount / 100,
         otp,
       });
+
+      if (appointment.counselor && appointment.counselor.email) {
+        await sendPaymentNotificationToCounselor(appointment.counselor.email, {
+          counselorName: appointment.counselor.name,
+          studentName: appointment.student.name,
+          amount: paymentIntent.amount / 100
+        });
+      }
     }
   }
 
@@ -93,7 +101,7 @@ const verifyClientPayment = async (paymentIntentId, bookingId, userId) => {
       { _id: bookingId, student: userId },
       { status: "payment_done", paymentStatus: "paid" },
       { new: true }
-    ).populate("student", "email name");
+    ).populate("student", "email name").populate("counselor", "email name");
 
     if (appointment && appointment.student) {
       const otp = generateOTP();
@@ -112,6 +120,14 @@ const verifyClientPayment = async (paymentIntentId, bookingId, userId) => {
         amount: paymentIntent.amount / 100,
         otp,
       });
+
+      if (appointment.counselor && appointment.counselor.email) {
+        await sendPaymentNotificationToCounselor(appointment.counselor.email, {
+          counselorName: appointment.counselor.name,
+          studentName: appointment.student.name,
+          amount: paymentIntent.amount / 100
+        });
+      }
     }
   }
   return true;
