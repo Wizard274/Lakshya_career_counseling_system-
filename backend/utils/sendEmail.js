@@ -110,6 +110,14 @@ const sendOTPEmail = async (to, otp, purpose = "registration") => {
 const sendBookingEmail = async (to, bookingDetails) => {
   const { studentName, counselorName, date, timeSlot, topic, status, recipientName } = bookingDetails;
 
+  const isCounselor = recipientName === counselorName;
+  const greetingText = isCounselor 
+    ? "you have received a new appointment booking. Please check your dashboard for details." 
+    : "here's your session update:";
+
+  const partyLabel = isCounselor ? "Student" : "Counselor";
+  const partyName = isCounselor ? studentName : counselorName;
+
   const statusColors = {
     pending:   "#f59e0b",
     approved:  "#2563eb",
@@ -131,7 +139,7 @@ const sendBookingEmail = async (to, bookingDetails) => {
         .body { padding: 28px; }
         .detail { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f4f4f5; font-size: 14px; }
         .label { color: #a1a1aa; font-weight: 600; }
-        .value { color: #09090b; font-weight: 700; }
+        .value { color: #09090b; font-weight: 700; margin-left: 8px; }
         .status-badge { display: inline-block; padding: 4px 14px; border-radius: 99px; background: ${color}20; color: ${color}; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
         .footer { background: #f4f5fb; padding: 18px; text-align: center; color: #a1a1aa; font-size: 12px; }
       </style>
@@ -140,12 +148,12 @@ const sendBookingEmail = async (to, bookingDetails) => {
       <div class="card">
         <div class="header"><h1>✦ Session Update</h1></div>
         <div class="body">
-          <p style="color:#52525b;margin:0 0 20px;font-size:14px;">Hello <strong>${recipientName || studentName}</strong>, here's your session update:</p>
-          <div class="detail"><span class="label">Counselor</span><span class="value">${counselorName}</span></div>
-          <div class="detail"><span class="label">Date</span><span class="value">${date}</span></div>
-          <div class="detail"><span class="label">Time</span><span class="value">${timeSlot}</span></div>
-          <div class="detail"><span class="label">Topic</span><span class="value">${topic}</span></div>
-          <div class="detail" style="border:none"><span class="label">Status</span><span class="value"><span class="status-badge">${status}</span></span></div>
+          <p style="color:#52525b;margin:0 0 20px;font-size:14px;">Hello <strong>${recipientName || studentName}</strong>, ${greetingText}</p>
+          <div class="detail"><span class="label">${partyLabel} :- </span><span class="value">${partyName}</span></div>
+          <div class="detail"><span class="label">Date :- </span><span class="value">${date}</span></div>
+          <div class="detail"><span class="label">Time :- </span><span class="value">${timeSlot}</span></div>
+          <div class="detail"><span class="label">Topic :- </span><span class="value">${topic}</span></div>
+          <div class="detail" style="border:none"><span class="label">Status :- </span><span class="value"><span class="status-badge">${status}</span></span></div>
         </div>
         <div class="footer">© ${new Date().getFullYear()} Lakshya Career Platform</div>
       </div>
