@@ -99,11 +99,11 @@ const UserRegister = () => {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <div className="form-group">
                 <label className="form-label">Full Name *</label>
-                <input type="text" className="form-input" placeholder="John Smith" name="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+                <input type="text" className="form-input" placeholder="Enter your name" name="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
               </div>
               <div className="form-group">
                 <label className="form-label">Phone *</label>
-                <input type="tel" className="form-input" placeholder="+91 1234567890" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required />
+                <input type="tel" className="form-input" placeholder="1234567890" maxLength={10} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\\D/g, '') })} required />
               </div>
             </div>
 
