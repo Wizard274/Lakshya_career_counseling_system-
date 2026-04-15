@@ -10,6 +10,7 @@ import "../../styles/dashboard.css";
 
 const CounselorAppointments = () => {
   const [appointments, setAppointments] = useState([]);
+  const [meetingLinks, setMeetingLinks] = useState({});
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
   const [startDate, setStartDate]       = useState("");
@@ -31,6 +32,19 @@ const CounselorAppointments = () => {
       setPagination(data.pagination || {});
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
+  };
+
+  const handleLinkChange = (id, val) => setMeetingLinks(p => ({ ...p, [id]: val }));
+
+  const handleApproveWithLink = async (id) => {
+    const link = meetingLinks[id];
+    if (!link || !/^https?:\/\//i.test(link)) return toast.error("Please enter a valid meeting link (http/https)");
+    if (!window.confirm("Approve this appointment?")) return;
+    try {
+      await bookingService.updateBooking(id, { status: "approved", meetingLink: link });
+      toast.success("Appointment approved ✦");
+      fetchAppointments();
+    } catch (err) { toast.error(err.response?.data?.message || "Failed"); }
   };
 
   const handleStatusUpdate = async (id, status) => {
@@ -100,10 +114,15 @@ const CounselorAppointments = () => {
                     <td><span className={getStatusBadgeClass(apt.status)}>{apt.status}</span></td>
                     <td>
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                        {apt.status === "pending" && <>
-                          <button className="btn btn-success btn-sm" onClick={() => handleStatusUpdate(apt._id, "approved")}>✓ Approve</button>
-                          <button className="btn btn-danger btn-sm"  onClick={() => handleStatusUpdate(apt._id, "cancelled")}>✕ Reject</button>
-                        </>}
+                        {apt.status === "pending" && <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
+                          <input type="url" placeholder="Meeting Link (https://...)" 
+                                 className="filter-select" style={{ height: 30, padding: "0 10px", width: "220px", fontSize: 13 }}
+                                 value={meetingLinks[apt._id] || ""} onChange={(e) => handleLinkChange(apt._id, e.target.value)} />
+                          <div style={{ display: "flex", gap: 6 }}>
+                             <button className="btn btn-success btn-sm" onClick={() => handleApproveWithLink(apt._id)} disabled={!meetingLinks[apt._id]}>✓ Approve</button>
+                             <button className="btn btn-danger btn-sm" onClick={() => handleStatusUpdate(apt._id, "cancelled")}>✕ Reject</button>
+                          </div>
+                        </div>}
                         {(apt.status === "approved" || apt.status === "confirmed") && <>
                           <button className="btn btn-primary btn-sm" onClick={() => handleStatusUpdate(apt._id, "completed")}>✓ Complete</button>
                           <Link to={`/counselor/appointments/${apt._id}/notes`} className="btn btn-glass btn-sm">📝 Notes</Link>

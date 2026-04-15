@@ -269,9 +269,16 @@ const updateBooking = async (req, res, next) => {
       }
     }
 
+    if (status === "approved") {
+      if (!meetingLink || !/^https?:\/\//i.test(meetingLink)) {
+        return res.status(400).json({ success: false, message: "A valid meeting link (http:// or https://) is required to approve an appointment." });
+      }
+      appointment.meetingLink = meetingLink;
+      appointment.approvedAt = new Date();
+    }
+
     appointment.status = status;
     if (cancelReason) appointment.cancelReason = cancelReason;
-    if (meetingLink) appointment.meetingLink = meetingLink;
 
     await appointment.save();
 
@@ -289,6 +296,7 @@ const updateBooking = async (req, res, next) => {
         topic: appointment.topic,
         status,
         recipientName: appointment.student.name,
+        meetingLink: appointment.meetingLink,
       });
 
       await sendBookingEmail(appointment.counselor.email, {
@@ -299,6 +307,7 @@ const updateBooking = async (req, res, next) => {
         topic: appointment.topic,
         status,
         recipientName: appointment.counselor.name,
+        meetingLink: appointment.meetingLink,
       });
     } catch (emailErr) {
       console.error("Status email failed:", emailErr.message);
@@ -420,11 +429,13 @@ const verifyBookingOTP = async (req, res, next) => {
         studentName: appointment.student.name, counselorName: appointment.counselor.name,
         date: dateStr, timeSlot: appointment.timeSlot, topic: appointment.topic, status: "confirmed",
         recipientName: appointment.student.name,
+        meetingLink: appointment.meetingLink,
       });
       await sendBookingEmail(appointment.counselor.email, {
         studentName: appointment.student.name, counselorName: appointment.counselor.name,
         date: dateStr, timeSlot: appointment.timeSlot, topic: appointment.topic, status: "confirmed",
         recipientName: appointment.counselor.name,
+        meetingLink: appointment.meetingLink,
       });
     } catch (e) {
       console.log("Error sending confirmed email");

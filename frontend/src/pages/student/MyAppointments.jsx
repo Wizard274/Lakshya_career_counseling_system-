@@ -76,7 +76,11 @@ const MyAppointments = () => {
                       <span>🕐 {apt.timeSlot}</span>
                       <span>📅 {formatDateShort(apt.date)}</span>
                     </div>
-                    {apt.meetingLink && <a href={apt.meetingLink} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "var(--purple)", marginTop: 6, display: "inline-block", fontWeight: 600 }}>🔗 Join Meeting</a>}
+                    {apt.meetingLink ? (
+                      <a href={apt.meetingLink} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "var(--purple)", marginTop: 6, display: "inline-block", fontWeight: 600 }}>🔗 Join Session</a>
+                    ) : (
+                      <span style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 6, display: "inline-block", fontWeight: 500 }}>Meeting link will be available after approval</span>
+                    )}
                   </div>
                   <div className="apt-actions">
                     <span className={getStatusBadgeClass(apt.status)}>{apt.status === "payment_done" ? "awaiting otp" : apt.status}</span>

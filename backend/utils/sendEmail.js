@@ -108,7 +108,7 @@ const sendOTPEmail = async (to, otp, purpose = "registration") => {
 
 // ── Booking Notification Email ────────────────────────────
 const sendBookingEmail = async (to, bookingDetails) => {
-  const { studentName, counselorName, date, timeSlot, topic, status, recipientName } = bookingDetails;
+  const { studentName, counselorName, date, timeSlot, topic, status, recipientName, meetingLink } = bookingDetails;
 
   const isCounselor = recipientName === counselorName;
   const greetingText = isCounselor 
@@ -153,7 +153,8 @@ const sendBookingEmail = async (to, bookingDetails) => {
           <div class="detail"><span class="label">Date :- </span><span class="value">${date}</span></div>
           <div class="detail"><span class="label">Time :- </span><span class="value">${timeSlot}</span></div>
           <div class="detail"><span class="label">Topic :- </span><span class="value">${topic}</span></div>
-          <div class="detail" style="border:none"><span class="label">Status :- </span><span class="value"><span class="status-badge">${status}</span></span></div>
+          <div class="detail" style="${meetingLink ? '' : 'border:none'}"><span class="label">Status :- </span><span class="value"><span class="status-badge">${status}</span></span></div>
+          ${meetingLink ? `<div class="detail" style="border:none"><span class="label">Join Link :- </span><span class="value"><a href="${meetingLink}" style="color: #2563eb; font-weight: bold;">Click Here to Join</a></span></div>` : ''}
         </div>
         <div class="footer">© ${new Date().getFullYear()} Lakshya Career Platform</div>
       </div>
