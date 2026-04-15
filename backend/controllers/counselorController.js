@@ -181,9 +181,19 @@ const setAvailability = async (req, res, next) => {
  */
 const getCounselorAppointments = async (req, res, next) => {
   try {
-    const { status, page = 1, limit = 10 } = req.query;
+    const { status, startDate, endDate, page = 1, limit = 10 } = req.query;
     const query = { counselor: req.user._id };
     if (status) query.status = status;
+
+    if (startDate || endDate) {
+      query.date = {};
+      if (startDate) query.date.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        query.date.$lte = end;
+      }
+    }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
