@@ -99,7 +99,7 @@ const UserRegister = () => {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <div className="form-group">
                 <label className="form-label">Full Name *</label>
-                <input type="text" className="form-input" placeholder="John Smith" name="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+                <input type="text" className="form-input" placeholder="Enter Name" name="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
               </div>
               <div className="form-group">
                 <label className="form-label">Phone *</label>

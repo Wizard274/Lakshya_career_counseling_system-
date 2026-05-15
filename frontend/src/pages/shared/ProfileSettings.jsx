@@ -23,6 +23,26 @@ const ProfileSettings = () => {
     confirmPassword: "",
   });
 
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const dbUser = await userService.getMe();
+        if (dbUser) {
+          setForm({
+            name: dbUser.name || "",
+            phone: dbUser.phone || "",
+            bio: dbUser.bio || "",
+          });
+          // Also update local storage to keep it in sync
+          localStorage.setItem("userInfo", JSON.stringify({ ...user, ...dbUser }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch fresh profile data", err);
+      }
+    };
+    fetchUser();
+  }, []);
+
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

@@ -24,6 +24,25 @@ const CounselorProfile = () => {
     ...f, expertise: f.expertise.includes(tag) ? f.expertise.filter((e) => e !== tag) : [...f.expertise, tag],
   }));
 
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const dbUser = await userService.getMe();
+        if (dbUser) {
+          setForm({
+            name: dbUser.name || "", phone: dbUser.phone || "", bio: dbUser.bio || "",
+            qualifications: dbUser.qualifications || "", yearsOfExperience: dbUser.yearsOfExperience || 0,
+            hourlyRate: dbUser.hourlyRate || 0, expertise: dbUser.expertise || [],
+          });
+          localStorage.setItem("userInfo", JSON.stringify({ ...user, ...dbUser }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch fresh counselor profile data");
+      }
+    };
+    fetchUser();
+  }, []);
+
   const handleAddCustomExpertise = () => {
     const tag = customExpertise.trim();
     if (tag && !form.expertise.includes(tag)) {

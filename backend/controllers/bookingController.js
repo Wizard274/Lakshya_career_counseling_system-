@@ -107,15 +107,6 @@ const createBooking = async (req, res, next) => {
       console.error("Booking email failed:", emailErr.message);
     }
 
-    // WhatsApp (if phone available)
-    if (student.phone) {
-      sendBookingWhatsApp(student.phone, {
-        counselorName: counselor.name,
-        date: dateStr,
-        timeSlot,
-        status: "pending",
-      }).catch(console.error);
-    }
 
     res.status(201).json({
       success: true,

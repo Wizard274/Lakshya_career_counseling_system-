@@ -88,32 +88,41 @@ const verifyClientPayment = async (paymentIntentId, bookingId, userId) => {
   if (payment && payment.status !== "succeeded") {
     payment.status = "succeeded";
     await payment.save();
-
-    const appointment = await Appointment.findOneAndUpdate(
-      { _id: bookingId, student: userId },
-      { status: "payment_done", paymentStatus: "paid" },
-      { new: true }
-    ).populate("student", "email name");
-
-    if (appointment && appointment.student) {
-      const otp = generateOTP();
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
-      
-      await OTP.deleteMany({ email: appointment.student.email, purpose: "confirm-booking" });
-      await OTP.create({
-        email: appointment.student.email,
-        otp,
-        purpose: "confirm-booking",
-        expiresAt,
-      });
-
-      await sendPaymentSuccessEmail(appointment.student.email, {
-        studentName: appointment.student.name,
-        amount: paymentIntent.amount / 100,
-        otp,
-      });
-    }
   }
+
+  // Always attempt to update appointment to payment_done if it isn't already, and send OTP
+  const appointment = await Appointment.findOneAndUpdate(
+    { _id: bookingId, student: userId },
+    { status: "payment_done", paymentStatus: "paid" },
+    { new: true }
+  ).populate("student", "email name");
+
+  if (appointment && appointment.student) {
+    // Check if we already have a valid unexpired OTP
+    const existingOTP = await OTP.findOne({ email: appointment.student.email, purpose: "confirm-booking" });
+    
+    // Only generate and send a new OTP if there isn't one, or if we explicitly want to force a resend
+    // For safety, let's just forcefully generate a new one if verifyClientPayment is called,
+    // as it's the initialization of the verification flow.
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+    
+    await OTP.deleteMany({ email: appointment.student.email, purpose: "confirm-booking" });
+    await OTP.create({
+      email: appointment.student.email,
+      otp,
+      purpose: "confirm-booking",
+      expiresAt,
+    });
+
+    console.log(`Sending Payment Success + OTP email to ${appointment.student.email}`);
+    await sendPaymentSuccessEmail(appointment.student.email, {
+      studentName: appointment.student.name,
+      amount: paymentIntent.amount / 100,
+      otp,
+    });
+  }
+
   return true;
 };
 
