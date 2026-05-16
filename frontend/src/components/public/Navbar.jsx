@@ -76,7 +76,7 @@ const Navbar = ({ simplified = false }) => {
             )}
           </div>
 
-          <button className="mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>
+          <button className="mobile-menu-btn" aria-label="Toggle mobile menu" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? "✕" : "☰"}
           </button>
         </div>

@@ -97,10 +97,10 @@ const LandingPage = () => {
               Connect with certified career counselors. Get personalized guidance, expert sessions, and actionable plans to reach your goals. Built for the modern professional.
             </motion.p>
             <motion.div className="hero-actions" variants={fadeUp}>
-              <button onClick={() => {
+              <button aria-label="Explore Services" onClick={() => {
                 document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
               }} className="btn btn-outline btn-lg">Explore Services</button>
-              <button onClick={() => handleProtectedAction("book a counselor", "/student/counselors")} className="btn btn-primary btn-lg glow-on-hover">
+              <button aria-label="Book a Counselor" onClick={() => handleProtectedAction("book a counselor", "/student/counselors")} className="btn btn-primary btn-lg glow-on-hover">
                 Book Counselor
               </button>
             </motion.div>
@@ -109,7 +109,7 @@ const LandingPage = () => {
           <motion.div className="hero-visual" initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }}>
             <Tilt tiltMaxAngleX={shouldReduceMotion ? 0 : 5} tiltMaxAngleY={shouldReduceMotion ? 0 : 5} perspective={1000} transitionSpeed={1000} scale={shouldReduceMotion ? 1 : 1.02} className="tilt-container">
               <div className="glass-mockup">
-                <img src="/hero_dashboard_mockup_1778839303471.png" alt="Lakshya Dashboard Preview" className="hero-image" />
+                <img src="/hero_dashboard_mockup_1778839303471.png" alt="Lakshya Dashboard Preview" className="hero-image" fetchPriority="high" decoding="async" />
                 <div className="glass-reflection" />
               </div>
             </Tilt>
@@ -118,11 +118,11 @@ const LandingPage = () => {
       </section>
 
       {/* --- ABOUT SECTION --- */}
-      <section id="about" className="section-padding" style={{ position: "relative", zIndex: 2 }}>
+      <section id="about" className="section-padding" style={{ position: "relative", zIndex: 20, paddingBottom: 0 }}>
         <div className="hero-container" style={{ gridTemplateColumns: "1fr" }}>
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <h2 className="section-title">Why Lakshya?</h2>
-            <p className="section-subtitle">
+            <p className="section-subtitle" style={{ marginBottom: "24px" }}>
               We believe every student deserves clear, actionable, and personalized career guidance. Lakshya bridges the gap between ambition and reality using state-of-the-art AI.
             </p>
           </motion.div>
@@ -138,7 +138,7 @@ const LandingPage = () => {
           Powerful tools and expert guidance designed to accelerate your career growth.
         </motion.p>
 
-        <motion.div className="features-grid" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}>
+        <motion.div className="features-grid" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
           {[
             { lottie: "https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json", icon: "🎯", title: "Career Guidance", desc: "1-on-1 personalized sessions to map out your exact career trajectory." },
             { lottie: "https://assets2.lottiefiles.com/packages/lf20_ucbyrun5.json", icon: "👨‍🏫", title: "Expert Counselors", desc: "Book sessions with verified industry experts and certified counselors." },
@@ -159,26 +159,29 @@ const LandingPage = () => {
         </motion.div>
       </section>
 
-      {/* --- VIDEO SHOWCASE SECTION --- */}
-      <section id="how-it-works" className="section-padding" style={{ position: "relative", zIndex: 2 }}>
-        <div className="hero-container" style={{ gridTemplateColumns: "1fr" }}>
-          <motion.h2 className="section-title" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-            See How It Works
-          </motion.h2>
-          <motion.div className="showcase-video-container" initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              className="showcase-video"
-            >
-              <source src="https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screens-2720-large.mp4" type="video/mp4" />
-            </video>
-            <div className="video-glass-border" />
-          </motion.div>
-        </div>
+      {/* --- WORKFLOW SECTION (See How It Works) --- */}
+      <section id="how-it-works" className="section-padding" style={{ position: "relative", zIndex: 20 }}>
+        <motion.h2 className="section-title" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          See How It Works
+        </motion.h2>
+        <motion.p className="section-subtitle" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          A simple, streamlined process to map out your career trajectory.
+        </motion.p>
+
+        <motion.div className="workflow-grid" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
+          {[
+            { step: "1", title: "Create Profile", desc: "Sign up and tell us about your background, interests, and goals." },
+            { step: "2", title: "Get Analysis", desc: "Our AI engine analyzes your profile against current industry trends." },
+            { step: "3", title: "Connect", desc: "Book a 1-on-1 session with a certified career counselor." },
+            { step: "4", title: "Achieve Goals", desc: "Follow your personalized roadmap and track your progress." },
+          ].map((w, i) => (
+            <motion.div key={i} className="workflow-step interactive" variants={fadeUp}>
+              <div className="step-number">{w.step}</div>
+              <h3>{w.title}</h3>
+              <p>{w.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
       </section>
 
       {/* --- STATS / PROJECT INFO --- */}
@@ -187,14 +190,14 @@ const LandingPage = () => {
           <motion.h2 className="section-title" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             Trusted by Thousands
           </motion.h2>
-          <motion.div style={{ display: "flex", justifyContent: "center", gap: "64px", flexWrap: "wrap", marginTop: "48px" }} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
+          <motion.div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "32px", marginTop: "48px" }} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
             {[
-              { val: 2400, suffix: "+", label: "Students Guided" },
-              { val: 150, suffix: "+", label: "Certified Counselors" },
-              { val: 98, suffix: "%", label: "Satisfaction Rate" },
+              { val: 10000, suffix: "+", label: "Students Guided" },
+              { val: 500, suffix: "+", label: "Certified Counselors" },
+              { val: 95, suffix: "%", label: "Success Rate" },
             ].map((s, i) => (
-              <motion.div key={i} variants={fadeUp} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <span style={{ fontSize: "4rem", fontWeight: 800, color: "var(--primary-color)", fontFamily: "'Inter', sans-serif" }}>
+              <motion.div key={i} variants={fadeUp} className="feature-card interactive" style={{ padding: "32px 24px", display: "flex", flexDirection: "column", gap: "12px", alignItems: "center" }}>
+                <span style={{ fontSize: "3.5rem", fontWeight: 800, color: "var(--primary-color)", fontFamily: "'Inter', sans-serif", lineHeight: 1 }}>
                   {statsInView ? <CountUp end={s.val} duration={2.5} separator="," useEasing={true} /> : "0"}
                   {s.suffix}
                 </span>
@@ -210,7 +213,7 @@ const LandingPage = () => {
         <motion.div className="cta-container interactive" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
           <h2 className="section-title">Ready to take the next step?</h2>
           <p className="section-subtitle" style={{ marginBottom: "32px", color: "var(--text-main)" }}>Join Lakshya today and start building the future you deserve.</p>
-          <button onClick={() => handleProtectedAction("get started", "/student/dashboard")} className="btn btn-primary btn-lg glow-on-hover" style={{ padding: "16px 48px" }}>
+          <button aria-label="Get Started Free" onClick={() => handleProtectedAction("get started", "/student/dashboard")} className="btn btn-primary btn-lg glow-on-hover" style={{ padding: "16px 48px" }}>
             Get Started Free
           </button>
         </motion.div>

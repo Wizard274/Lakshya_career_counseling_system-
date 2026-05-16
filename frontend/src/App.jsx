@@ -22,7 +22,7 @@ import ResetPassword  from "./pages/auth/ResetPassword.jsx";
 const LandingPage = lazy(() => import("./pages/public/LandingPage.jsx"));
 
 // Lazy load Student Pages
-const StudentDashboard = lazy(() => import("./pages/student/Dashboard.jsx"));
+const StudentDashboard = lazy(() => import("./pages/student/StudentDashboard.jsx"));
 const Counselors       = lazy(() => import("./pages/student/Counselors.jsx"));
 const BookSession      = lazy(() => import("./pages/student/BookSession.jsx"));
 const MyAppointments   = lazy(() => import("./pages/student/MyAppointments.jsx"));
@@ -47,6 +47,7 @@ const Reports           = lazy(() => import("./pages/admin/Reports.jsx"));
 // Shared
 import NotFound        from "./pages/NotFound.jsx";
 const ProfileSettings = lazy(() => import("./pages/shared/ProfileSettings.jsx"));
+const ComingSoon      = lazy(() => import("./pages/shared/ComingSoon.jsx"));
 
 // Reusable Fallback
 const PageFallback = () => (
@@ -98,6 +99,13 @@ function App() {
                   <Route path="dashboard"            element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
                   <Route path="counselors"           element={<ProtectedRoute allowedRoles={["student"]}><Counselors /></ProtectedRoute>} />
                   <Route path="book/:counselorId"    element={<ProtectedRoute allowedRoles={["student"]}><BookSession /></ProtectedRoute>} />
+                  
+                  {/* Placeholder Routes for Premium Features */}
+                  <Route path="roadmap"              element={<ProtectedRoute allowedRoles={["student"]}><ComingSoon /></ProtectedRoute>} />
+                  <Route path="skills"               element={<ProtectedRoute allowedRoles={["student"]}><ComingSoon /></ProtectedRoute>} />
+                  <Route path="ai-assistant"         element={<ProtectedRoute allowedRoles={["student"]}><ComingSoon /></ProtectedRoute>} />
+                  <Route path="learning"             element={<ProtectedRoute allowedRoles={["student"]}><ComingSoon /></ProtectedRoute>} />
+                  <Route path="achievements"         element={<ProtectedRoute allowedRoles={["student"]}><ComingSoon /></ProtectedRoute>} />
                   <Route path="appointments"         element={<ProtectedRoute allowedRoles={["student"]}><MyAppointments /></ProtectedRoute>} />
                   <Route path="payment/:id"          element={<ProtectedRoute allowedRoles={["student"]}><Payment /></ProtectedRoute>} />
                   <Route path="verify-booking/:id"   element={<ProtectedRoute allowedRoles={["student"]}><VerifyBookingOtp /></ProtectedRoute>} />
