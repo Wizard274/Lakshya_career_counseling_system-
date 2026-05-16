@@ -1,8 +1,11 @@
 // pages/student/Dashboard.jsx — Lakshya Design
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion, useReducedMotion } from "framer-motion";
+import Tilt from "react-parallax-tilt";
 import PageLayout from "../../components/PageLayout.jsx";
 import Loader from "../../components/Loader.jsx";
+import AnimatedChart from "../../components/dashboard/AnimatedChart.jsx";
 import bookingService from "../../services/bookingService.js";
 import authService from "../../services/authService.js";
 import { getDayNumber, getMonthAbbr, getStatusBadgeClass } from "../../utils/helpers.js";
@@ -13,6 +16,7 @@ const StudentDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, pending: 0, completed: 0, upcoming: 0 });
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => { fetchData(); }, []);
 
@@ -31,91 +35,128 @@ const StudentDashboard = () => {
     finally { setLoading(false); }
   };
 
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  };
+
   if (loading) return <PageLayout><div className="loader-center"><div className="spinner" /><p>Loading your dashboard...</p></div></PageLayout>;
 
   return (
     <PageLayout>
-      {/* Hero */}
-      <div className="page-hero">
-        <div className="page-hero-content">
-          <div className="page-hero-eyebrow">Student Dashboard</div>
-          <h1>Welcome back, {user?.name?.split(" ")[0]}! ✦</h1>
-          <p>Track your career journey, sessions, and upcoming appointments all in one place.</p>
-          <div style={{ marginTop: 20, display: "flex", gap: 12 }}>
-            <Link to="/student/counselors" className="btn btn-glass">🔍 Find Counselors</Link>
-            <Link to="/student/appointments" className="btn" style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" }}>📅 My Sessions</Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="stats-grid anim-stagger">
-        {[
-          { label: "Total Bookings",   value: stats.total,     icon: "📅", glow: "rgba(124,58,237,0.08)" },
-          { label: "Upcoming",         value: stats.upcoming,  icon: "🔜", glow: "rgba(6,182,212,0.08)"  },
-          { label: "Pending Approval", value: stats.pending,   icon: "⏳", glow: "rgba(245,158,11,0.08)" },
-          { label: "Completed",        value: stats.completed, icon: "✅", glow: "rgba(16,185,129,0.08)" },
-        ].map((s) => (
-          <div className="stat-card anim-fadeup" key={s.label} style={{ "--stat-glow": s.glow }}>
-            <div className="stat-icon">{s.icon}</div>
-            <div className="stat-value">{s.value}</div>
-            <div className="stat-label">{s.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Action cards */}
-      <div className="action-grid">
-        <Link to="/student/counselors" className="action-card ac-purple">
-          <div className="ac-icon">🔍</div>
-          <div className="ac-label">Find Counselors</div>
-          <div className="ac-sub">Browse expert career guides</div>
-        </Link>
-        <Link to="/student/appointments" className="action-card ac-cyan">
-          <div className="ac-icon">📅</div>
-          <div className="ac-label">My Sessions</div>
-          <div className="ac-sub">View all appointments</div>
-        </Link>
-      </div>
-
-      {/* Recent appointments */}
-      <div className="card">
-        <div className="card-header">
-          <div className="card-title">✦ Recent Sessions</div>
-          <Link to="/student/appointments" style={{ fontSize: 13, fontWeight: 700, background: "var(--grad-primary)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>View All →</Link>
-        </div>
-        <div className="card-body" style={{ padding: appointments.length === 0 ? 24 : "8px 16px 16px" }}>
-          {appointments.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon">✦</div>
-              <h4>No sessions yet</h4>
-              <p>Book your first career counseling session and start your journey</p>
-              <Link to="/student/counselors" className="btn btn-primary">Find a Counselor</Link>
+      <motion.div initial="hidden" animate="visible" variants={staggerContainer} style={{ width: "100%" }}>
+        {/* Hero */}
+        <motion.div className="page-hero" variants={fadeUp}>
+          <div className="page-hero-content">
+            <div className="page-hero-eyebrow">Student Dashboard</div>
+            <h1>Welcome back, {user?.name?.split(" ")[0]}! ✦</h1>
+            <p>Track your career journey, sessions, and upcoming appointments all in one place.</p>
+            <div style={{ marginTop: 20, display: "flex", gap: 12 }}>
+              <Link to="/student/counselors" className="btn btn-glass interactive">🔍 Find Counselors</Link>
+              <Link to="/student/appointments" className="btn interactive" style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" }}>📅 My Sessions</Link>
             </div>
-          ) : (
-            <div className="appointment-list">
-              {appointments.map((apt) => (
-                <div className="apt-card" key={apt._id} data-status={apt.status}>
-                  <div className="apt-date">
-                    <div className="apt-day">{getDayNumber(apt.date)}</div>
-                    <div className="apt-month">{getMonthAbbr(apt.date)}</div>
-                  </div>
-                  <div className="apt-info">
-                    <div className="apt-topic">{apt.topic}</div>
-                    <div className="apt-meta">
-                      <span>👨‍🏫 {apt.counselor?.name}</span>
-                      <span>🕐 {apt.timeSlot}</span>
+          </div>
+        </motion.div>
+
+        {/* Stats */}
+        <div className="stats-grid">
+          {[
+            { label: "Total Bookings",   value: stats.total,     icon: "📅", glow: "rgba(124,58,237,0.08)" },
+            { label: "Upcoming",         value: stats.upcoming,  icon: "🔜", glow: "rgba(6,182,212,0.08)"  },
+            { label: "Pending Approval", value: stats.pending,   icon: "⏳", glow: "rgba(245,158,11,0.08)" },
+            { label: "Completed",        value: stats.completed, icon: "✅", glow: "rgba(16,185,129,0.08)" },
+          ].map((s) => (
+            <motion.div key={s.label} variants={fadeUp}>
+              <Tilt tiltMaxAngleX={shouldReduceMotion ? 0 : 5} tiltMaxAngleY={shouldReduceMotion ? 0 : 5} perspective={1000} transitionSpeed={1000} scale={shouldReduceMotion ? 1 : 1.02}>
+                <div className="stat-card interactive mouse-glow" style={{ "--stat-glow": s.glow }}>
+                  <div className="stat-icon">{s.icon}</div>
+                  <div className="stat-value">{s.value}</div>
+                  <div className="stat-label">{s.label}</div>
+                </div>
+              </Tilt>
+            </motion.div>
+          ))}
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24, marginBottom: 32 }}>
+          {/* Chart Section */}
+          <motion.div className="card" variants={fadeUp}>
+            <div className="card-header">
+              <div className="card-title">📈 Analytics Overview</div>
+            </div>
+            <div className="card-body" style={{ padding: 16 }}>
+              <AnimatedChart />
+            </div>
+          </motion.div>
+
+          {/* Action cards */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            <motion.div variants={fadeUp}>
+              <Tilt tiltMaxAngleX={shouldReduceMotion ? 0 : 3} tiltMaxAngleY={shouldReduceMotion ? 0 : 3} perspective={1000} transitionSpeed={1000} scale={shouldReduceMotion ? 1 : 1.02}>
+                <Link to="/student/counselors" className="action-card ac-purple interactive">
+                  <div className="ac-icon">🔍</div>
+                  <div className="ac-label">Find Counselors</div>
+                  <div className="ac-sub">Browse expert career guides</div>
+                </Link>
+              </Tilt>
+            </motion.div>
+
+            <motion.div variants={fadeUp}>
+              <Tilt tiltMaxAngleX={shouldReduceMotion ? 0 : 3} tiltMaxAngleY={shouldReduceMotion ? 0 : 3} perspective={1000} transitionSpeed={1000} scale={shouldReduceMotion ? 1 : 1.02}>
+                <Link to="/student/appointments" className="action-card ac-cyan interactive">
+                  <div className="ac-icon">📅</div>
+                  <div className="ac-label">My Sessions</div>
+                  <div className="ac-sub">View all appointments</div>
+                </Link>
+              </Tilt>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Recent appointments */}
+        <motion.div className="card" variants={fadeUp}>
+          <div className="card-header">
+            <div className="card-title">✦ Recent Sessions</div>
+            <Link to="/student/appointments" className="interactive" style={{ fontSize: 13, fontWeight: 700, background: "var(--grad-primary)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>View All →</Link>
+          </div>
+          <div className="card-body" style={{ padding: appointments.length === 0 ? 24 : "8px 16px 16px" }}>
+            {appointments.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">✦</div>
+                <h4>No sessions yet</h4>
+                <p>Book your first career counseling session and start your journey</p>
+                <Link to="/student/counselors" className="btn btn-primary interactive">Find a Counselor</Link>
+              </div>
+            ) : (
+              <div className="appointment-list">
+                {appointments.map((apt) => (
+                  <div className="apt-card interactive" key={apt._id} data-status={apt.status}>
+                    <div className="apt-date">
+                      <div className="apt-day">{getDayNumber(apt.date)}</div>
+                      <div className="apt-month">{getMonthAbbr(apt.date)}</div>
+                    </div>
+                    <div className="apt-info">
+                      <div className="apt-topic">{apt.topic}</div>
+                      <div className="apt-meta">
+                        <span>👨‍🏫 {apt.counselor?.name}</span>
+                        <span>🕐 {apt.timeSlot}</span>
+                      </div>
+                    </div>
+                    <div className="apt-actions">
+                      <span className={getStatusBadgeClass(apt.status)}>{apt.status}</span>
                     </div>
                   </div>
-                  <div className="apt-actions">
-                    <span className={getStatusBadgeClass(apt.status)}>{apt.status}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
     </PageLayout>
   );
 };

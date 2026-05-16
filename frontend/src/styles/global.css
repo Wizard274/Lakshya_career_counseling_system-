@@ -3,7 +3,7 @@
    Career Counseling Platform — Calm · Professional · Trustworthy
    ================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,500;0,600;0,700;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
   /* Stormy Morning Palette */
@@ -24,7 +24,7 @@
   /* Text */
   --text-heading:   #384959;
   --text-body:      #6A89A7;
-  --text-muted:     #9BB3C4;
+  --text-muted:     #7895A9;
   --text-on-dark:   #FFFFFF;
   --text-dark:      #2D3B47;
 
@@ -44,7 +44,7 @@
   --border-dark:    #B8CFDE;
 
   /* Typography */
-  --font-display: 'Lora', Georgia, serif;
+  --font-display: 'Manrope', system-ui, sans-serif;
   --font-body:    'Inter', system-ui, sans-serif;
 
   /* Radius */

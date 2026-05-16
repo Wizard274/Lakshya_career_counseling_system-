@@ -1,6 +1,6 @@
 // pages/auth/UserLogin.jsx — Stormy Morning Theme
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import authService from "../../services/authService.js";
 import { getRoleDashboard } from "../../utils/helpers.js";
@@ -8,15 +8,18 @@ import "../../styles/auth.css";
 
 const UserLogin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw]   = useState(false);
   const [form, setForm]       = useState({ email: "", password: "" });
 
   useEffect(() => {
     const user = authService.getStoredUser();
-    if (user && localStorage.getItem("userToken"))
-      navigate(getRoleDashboard(user.role), { replace: true });
-  }, [navigate]);
+    if (user && localStorage.getItem("userToken")) {
+      const from = location.state?.from?.pathname || getRoleDashboard(user.role);
+      navigate(from, { replace: true });
+    }
+  }, [navigate, location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +28,8 @@ const UserLogin = () => {
     try {
       const data = await authService.login(form.email, form.password);
       toast.success(`Welcome back, ${data.user.name}!`);
-      navigate(getRoleDashboard(data.user.role));
+      const from = location.state?.from?.pathname || getRoleDashboard(data.user.role);
+      navigate(from, { replace: true });
     } catch (err) {
       const errData = err.response?.data;
       if (errData?.needsVerification) {

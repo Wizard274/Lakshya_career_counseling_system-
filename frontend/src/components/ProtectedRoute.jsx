@@ -3,7 +3,7 @@
 // ============================================
 
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import authService from "../services/authService.js";
 import { getRoleDashboard } from "../utils/helpers.js";
 
@@ -15,9 +15,11 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem("userToken");
   const user = authService.getStoredUser();
 
+  const location = useLocation();
+
   // Not logged in → redirect to login
   if (!token || !user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Wrong role → redirect to their own dashboard
